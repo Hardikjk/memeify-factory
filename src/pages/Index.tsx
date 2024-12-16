@@ -1,4 +1,4 @@
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { useState } from "react";
 import { Upload, Download } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -9,6 +9,7 @@ const Index = () => {
   const [topText, setTopText] = useState("");
   const [bottomText, setBottomText] = useState("");
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
+  const [showFireworks, setShowFireworks] = useState(false);
 
   const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -28,6 +29,10 @@ const Index = () => {
       link.download = "meme.png";
       link.href = canvas.toDataURL("image/png");
       link.click();
+      
+      // Trigger fireworks animation
+      setShowFireworks(true);
+      setTimeout(() => setShowFireworks(false), 5000);
     }
   };
 
@@ -35,8 +40,42 @@ const Index = () => {
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      className="min-h-screen p-8 max-w-7xl mx-auto"
+      className="min-h-screen p-8 max-w-7xl mx-auto relative"
     >
+      <AnimatePresence>
+        {showFireworks && (
+          <>
+            {[...Array(12)].map((_, i) => (
+              <motion.div
+                key={i}
+                initial={{ 
+                  x: "50%",
+                  y: "50%",
+                  scale: 0,
+                  opacity: 0 
+                }}
+                animate={{ 
+                  x: `${Math.random() * 100}%`,
+                  y: `${Math.random() * 100}%`,
+                  scale: [0, 1.5, 0],
+                  opacity: [0, 1, 0]
+                }}
+                transition={{
+                  duration: 2,
+                  delay: Math.random() * 2,
+                  repeat: 2,
+                  ease: "easeOut"
+                }}
+                className="fixed w-4 h-4 rounded-full bg-gradient-to-r from-yellow-400 to-red-500 pointer-events-none"
+                style={{
+                  boxShadow: "0 0 20px 2px rgba(255, 169, 0, 0.5)"
+                }}
+              />
+            ))}
+          </>
+        )}
+      </AnimatePresence>
+
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
