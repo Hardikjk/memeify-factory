@@ -1,17 +1,14 @@
 import { motion } from "framer-motion";
 import { useState } from "react";
-import { Upload, Download, Share2 } from "lucide-react";
+import { Upload, Download } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { MemeCanvas } from "@/components/MemeCanvas";
-import { TemplateGallery } from "@/components/TemplateGallery";
-import { ShareModal } from "@/components/ShareModal";
 
 const Index = () => {
   const [topText, setTopText] = useState("");
   const [bottomText, setBottomText] = useState("");
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
-  const [isShareOpen, setIsShareOpen] = useState(false);
 
   const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -21,6 +18,16 @@ const Index = () => {
         setSelectedImage(reader.result as string);
       };
       reader.readAsDataURL(file);
+    }
+  };
+
+  const handleDownload = () => {
+    const canvas = document.querySelector("canvas");
+    if (canvas) {
+      const link = document.createElement("a");
+      link.download = "meme.png";
+      link.href = canvas.toDataURL("image/png");
+      link.click();
     }
   };
 
@@ -37,10 +44,10 @@ const Index = () => {
         className="text-center mb-12"
       >
         <span className="px-4 py-1 rounded-full bg-primary/10 text-primary text-sm font-medium mb-4 inline-block">
-          Create & Share
+          Create & Download
         </span>
         <h1 className="text-4xl font-bold mb-4">Meme Generator</h1>
-        <p className="text-muted-foreground">Create, customize, and share your memes instantly</p>
+        <p className="text-muted-foreground">Create, customize, and download your memes instantly</p>
       </motion.div>
 
       <div className="grid md:grid-cols-2 gap-8">
@@ -77,13 +84,11 @@ const Index = () => {
                 onChange={handleImageUpload}
                 className="hidden"
               />
-              <Button className="flex-1 h-12" variant="secondary" onClick={() => setIsShareOpen(true)}>
-                <Share2 className="mr-2 h-4 w-4" /> Share
+              <Button className="flex-1 h-12" variant="secondary" onClick={handleDownload}>
+                <Download className="mr-2 h-4 w-4" /> Download
               </Button>
             </div>
           </div>
-
-          <TemplateGallery onSelect={setSelectedImage} />
         </motion.div>
 
         <motion.div
@@ -99,8 +104,6 @@ const Index = () => {
           />
         </motion.div>
       </div>
-
-      <ShareModal open={isShareOpen} onOpenChange={setIsShareOpen} />
     </motion.div>
   );
 };
